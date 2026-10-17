@@ -7,10 +7,10 @@
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#222222",
-  "orientation": "portrait-primary",
+  "orientation": "landscape-primary",
   "icons": [
     {
-      "src": "乒乓球计分器.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
