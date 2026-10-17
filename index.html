@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, maximum-scale=5.0">
+<title>乒乓球记分器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, -apple-system, sans-serif;-webkit-tap-highlight-color:transparent;}
+body{background:#121212;color:#fff;padding:12px 8px;min-height:100vh}
+.container{width:100%;padding:0 8px}
+
+#timer{font-size:clamp(18px,4vw,28px);text-align:center;margin:8px 0;color:#8cf}
+
+.score-box{display:flex;gap:min(2vw,12px);width:100%}
+.team{flex:1;background:#222;border-radius:16px;display:flex;flex-direction:column;align-items:center;padding:16px 0;}
+
+.name-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    width:100%;
+    justify-content:center;
+    margin-bottom:8px;
+}
+.name-row.right-ball{
+    flex-direction:row-reverse;
+}
+.name-input{
+    font-size:clamp(18px,4vw,26px);
+    font-weight:bold;
+    text-align:center;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:#fff;
+    padding:4px;
+    width:auto;
+}
+.name-red{color:#ff4444;}
+.name-blue{color:#4499ff;}
+
+/* 发球指示改成浅黄色 */
+.ball {
+    width:clamp(14px,3vw,20px);
+    height:clamp(14px,3vw,20px);
+    border-radius:50%;
+    background:#ffee88;
+    box-shadow:0 0 6px rgba(255,238,136,0.9);
+    opacity:0;
+    transform:scale(0.6);
+    transition:all 0.2s ease;
+}
+.ball.active {opacity:1;transform:scale(1);}
+
+.game-count{font-size:clamp(16px,3vw,20px);color:#ffcc00;margin-bottom:8px}
+
+.score-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    padding:0 8px;
+    min-height:clamp(80px,20vw,140px);
+}
+.score{
+    font-size:clamp(80px,22vw,160px);
+    font-weight:bold;
+    line-height:1;
+}
+.score-red{color:#ff4444}
+.score-blue{color:#4499ff}
+
+.btn-group{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+.btn-group button{
+    width:clamp(44px,10vw,60px);
+    height:clamp(44px,10vw,60px);
+    font-size:clamp(20px,5vw,26px);
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+.add{background:#27ae60;color:white}
+.sub{background:#e74c3c;color:white}
+
+.ctrl{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:min(1.5vw,6px);
+}
+.ctrl button{
+    padding:clamp(6px,1vw,8px) 2px;
+    font-size:clamp(11px,2vw,13px);
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#3498db;
+    color:#fff;
+}
+#switchServerBtn{background:#9b59b6}
+</style>
+</head>
+<body>
+<div class="container">
+    <div id="timer">比赛时间：00:00</div>
+
+    <div class="score-box">
+        <div class="team">
+            <div class="name-row">
+                <span id="ballLeft" class="ball"></span>
+                <input id="nameLeft" class="name-input name-red" placeholder="选手A" value="选手A">
+            </div>
+            <span class="game-count">胜局：<span id="winLeft">0</span></span>
+
+            <div class="score-wrap">
+                <div class="btn-group">
+                    <button class="add" onclick="addLeft()">+</button>
+                    <button class="sub" onclick="subLeft()">−</button>
+                </div>
+                <div class="score score-red" id="scoreLeft">0</div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="team">
+            <div class="name-row right-ball">
+                <span id="ballRight" class="ball"></span>
+                <input id="nameRight" class="name-input name-blue" placeholder="选手B" value="选手B">
+            </div>
+            <span class="game-count">胜局：<span id="winRight">0</span></span>
+
+            <div class="score-wrap">
+                <div></div>
+                <div class="score score-blue" id="scoreRight">0</div>
+                <div class="btn-group">
+                    <button class="add" onclick="addRight()">+</button>
+                    <button class="sub" onclick="subRight()">−</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ctrl">
+        <button onclick="resetGame()">重置本局</button>
+        <button onclick="resetAll()">全部清零</button>
+        <button id="switchServerBtn" onclick="manualSwitchServer()">切换发球</button>
+        <button onclick="startTimer()">开始计时</button>
+        <button onclick="stopTimer()">停止计时</button>
+    </div>
+</div>
+
+<script>
+let leftScore = 0, rightScore = 0;
+let winLeft = 0, winRight = 0;
+let serverSide = 'left';
+let serveCount = 0;
+let timerInterval = null;
+let seconds = 0;
+let gameOver = false;
+
+const nameLeft = document.getElementById('nameLeft');
+const nameRight = document.getElementById('nameRight');
+const scoreLeftDom = document.getElementById('scoreLeft');
+const scoreRightDom = document.getElementById('scoreRight');
+const winLeftDom = document.getElementById('winLeft');
+const winRightDom = document.getElementById('winRight');
+const timerDom = document.getElementById('timer');
+const ballLeft = document.getElementById('ballLeft');
+const ballRight = document.getElementById('ballRight');
+
+function render(){
+    scoreLeftDom.innerText = leftScore;
+    scoreRightDom.innerText = rightScore;
+    winLeftDom.innerText = winLeft;
+    winRightDom.innerText = winRight;
+    checkWin();
+    updateServerTip();
+}
+
+function addLeft(){
+    if(gameOver){
+        leftScore=0;
+        rightScore=0;
+        swapPlayer();
+        serveCount=0;
+        gameOver=false;
+        render();
+        return;
+    }
+    leftScore++;
+    handleServeAfterPoint();
+    render()
+}
+function subLeft(){
+    if(gameOver){
+        return;
+    }
+    if(leftScore>0){
+        leftScore--;
+        recalcServer();
+    }
+    render()
+}
+function addRight(){
+    if(gameOver){
+        leftScore=0;
+        rightScore=0;
+        swapPlayer();
+        serveCount=0;
+        gameOver=false;
+        render();
+        return;
+    }
+    rightScore++;
+    handleServeAfterPoint();
+    render()
+}
+function subRight(){
+    if(gameOver){
+        return;
+    }
+    if(rightScore>0){
+        rightScore--;
+        recalcServer();
+    }
+    render()
+}
+
+function handleServeAfterPoint(){
+    const total = leftScore + rightScore;
+    const deuce = (leftScore >=10 && rightScore >=10);
+    serveCount++;
+    if( (deuce && serveCount >=1) || (!deuce && serveCount >=2) ){
+        serverSide = serverSide === 'left' ? 'right' : 'left';
+        serveCount = 0;
+    }
+}
+
+function recalcServer(){
+    const total = leftScore + rightScore;
+    const deuce = (leftScore >=10 && rightScore >=10);
+    const servePer = deuce ? 1 : 2;
+    const totalServes = Math.floor(total / servePer);
+    serverSide = (totalServes %2 ===0) ? 'left' : 'right';
+    serveCount = total % servePer;
+}
+
+function updateServerTip(){
+    ballLeft.classList.remove('active');
+    ballRight.classList.remove('active');
+    if(serverSide === 'left'){
+        ballLeft.classList.add('active');
+    }else{
+        ballRight.classList.add('active');
+    }
+}
+
+function manualSwitchServer(){
+    serverSide = serverSide === 'left' ? 'right' : 'left';
+    serveCount = 0;
+    updateServerTip();
+}
+
+function swapPlayer(){
+    const tempName = nameLeft.value;
+    nameLeft.value = nameRight.value;
+    nameRight.value = tempName;
+
+    const tempWin = winLeft;
+    winLeft = winRight;
+    winRight = tempWin;
+
+    nameLeft.classList.toggle('name-red');
+    nameLeft.classList.toggle('name-blue');
+    nameRight.classList.toggle('name-red');
+    nameRight.classList.toggle('name-blue');
+
+    scoreLeftDom.classList.toggle('score-red');
+    scoreLeftDom.classList.toggle('score-blue');
+    scoreRightDom.classList.toggle('score-red');
+    scoreRightDom.classList.toggle('score-blue');
+}
+
+function checkWin(){
+    const diff = Math.abs(leftScore - rightScore);
+    if((leftScore >=11 || rightScore >=11) && diff >=2 && !gameOver){
+        if(leftScore > rightScore){
+            winLeft++;
+        }else{
+            winRight++;
+        }
+        gameOver = true;
+    }
+}
+
+function resetGame(){
+    leftScore=0;
+    rightScore=0;
+    gameOver = false;
+    serveCount=0;
+    serverSide='left';
+    ballLeft.classList.remove('active');
+    ballRight.classList.remove('active');
+    render();
+}
+
+function resetAll(){
+    leftScore=0;
+    rightScore=0;
+    winLeft=0;
+    winRight=0;
+    gameOver=false;
+    seconds=0;
+    serveCount=0;
+    serverSide='left';
+    stopTimer();
+    timerDom.innerText="比赛时间：00:00";
+    ballLeft.classList.remove('active');
+    ballRight.classList.remove('active');
+    render();
+}
+
+function startTimer(){
+    if(timerInterval) return;
+    timerInterval = setInterval(()=>{
+        seconds++;
+        const min = String(Math.floor(seconds/60)).padStart(2,'0');
+        const sec = String(seconds%60).padStart(2,'0');
+        timerDom.innerText=`比赛时间：${min}:${sec}`;
+    },1000);
+}
+
+function stopTimer(){
+    clearInterval(timerInterval);
+    timerInterval=null;
+}
+
+render();
+</script>
+</body>
+</html>
