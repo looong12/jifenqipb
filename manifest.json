@@ -1,6 +1,7 @@
 {
   "id": "/",
   "name": "记分器",
+  "min_version": "21"
   "short_name": "记分器",
   "description": "乒乓球比赛记分工具，支持计分、切换发球方",
   "start_url": "./index.html",
