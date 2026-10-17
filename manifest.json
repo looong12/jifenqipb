@@ -1,6 +1,7 @@
 {
   "name": "乒乓球记分器",
   "short_name": "记分器",
+  "description": "乒乓球比赛记分工具",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",
@@ -9,7 +10,8 @@
     {
       "src": "乒乓球计分小程序 2.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
