@@ -1,6 +1,7 @@
 {
   "name": "乒乓球记分器",
   "short_name": "记分器",
+  "min_version": "21"
   "description": "乒乓球比赛记分工具",
   "start_url": "./index.html",
   "display": "standalone",
