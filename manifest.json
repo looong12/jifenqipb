@@ -9,7 +9,7 @@
   "theme_color": "#222222",
   "icons": [
     {
-      "src": "乒乓球计分小程序 2.png",
+      "src": "乒乓球计分器.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
