@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, maximum-scale=5.0, viewport‑fit=cover">
+<!-- 下面这条只是提示浏览器优先横屏，不能强制横屏！ -->
+<meta name="screen-orientation" content="landscape">
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#07080c">
 <title>乒乓球记分器</title>
@@ -24,6 +26,9 @@ body{
 .scale-wrap {
     transform-origin: center top;
     will-change: transform;
+    width: 1200px;
+    max-width:100%;
+    overflow:visible;
 }
 .wrap-rotate{
     width:100%;
@@ -34,12 +39,18 @@ body{
     width:100%;
     padding:0;
 }
+.head-line{
+    display:flex;
+    gap:24px;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    margin:8px 0 18px;
+}
 #timer{
     font-size:clamp(20px,2.2vw,26px);
     font-weight:500;
     letter-spacing:1px;
-    text-align:center;
-    margin:8px 0 18px;
     color:#cfd6e4;
 }
 #timer::before{
@@ -53,11 +64,11 @@ body{
     margin-right:10px;
     box-shadow:0 0 12px rgba(122,162,255,0.9);
 }
-.setting-info{
-    text-align:center;
-    font-size:clamp(14px,1.8vw,17px);
-    color:#aaa;
-    margin-bottom:10px;
+#setInfo{
+    font-size:clamp(20px,2.2vw,26px);
+    font-weight:500;
+    letter-spacing:1px;
+    color:#cfd6e4;
 }
 .score-box{
     display:flex;
@@ -90,7 +101,8 @@ body{
     justify-content:center;
     width:100%;
     position:relative;
-    margin-bottom:12px;
+    margin-bottom:0px; /* 加大名字区域下边距，抬高名字区域高度 */
+    padding:0px 0 16px 0;     /* 增加上下内边距，名字区域加高 */
 }
 .name-row .ball{
     position:absolute;
@@ -101,7 +113,7 @@ body{
     right:0;
 }
 .name-input{
-    font-size:clamp(20px,2.6vw,28px);
+    font-size:clamp(26px,3.4vw,100px);
     font-weight:600;
     text-align:center;
     background:transparent;
@@ -109,7 +121,7 @@ body{
     outline:none;
     color:#f5f5f7;
     padding:6px;
-    width:auto;
+    width:400px;
 }
 .name-red{
     background:linear-gradient(180deg,#ffd1d1 0%, #ff7474 100%);
@@ -148,7 +160,7 @@ body{
         0 0 34px rgba(255,170,0,0.55);
 }
 .game-count{
-    font-size:clamp(17px,2vw,20px);
+    font-size:clamp(22px,2.6vw,28px);;
     font-weight:600;
     letter-spacing:2px;
     color:#b8892a;
@@ -163,9 +175,9 @@ body{
     align-items:center;
     justify-content:space-between;
     width:100%;
-    padding:clamp(20px,3vh,36px) clamp(16px,2vw,26px);
-    min-height:30vh;
-    max-height:60vh;
+    padding:clamp(16px,2.5vh,28px) clamp(16px,2vw,26px);
+    min-height:28vh; /* 降低比分盒子最小高度，不挤压分数显示 */
+    max-height:52vh;
     background:
         linear-gradient(180deg, #242840 0%, #1a1d2c 100%);
     border:1px solid rgba(255,255,255,0.07);
@@ -370,8 +382,10 @@ button:active{
         </div>
     </div>
     <div class="container">
-        <div id="timer">比赛时间：00:00</div>
-        <div class="setting-info" id="setInfo">赛制：5局3胜</div>
+        <div class="head-line">
+            <div id="timer">比赛时间：00:00</div>
+            <div id="setInfo">赛制：不限局数</div>
+        </div>
         <div class="score-box">
             <div class="team">
                 <div class="name-row">
@@ -427,7 +441,7 @@ let timerInterval = null;
 let seconds = 0;
 let gameOver = false;
 // 赛制配置：目标胜局；null=不限局数
-let targetWin = 3; // 默认5局3胜，拿到3胜结束
+let targetWin = null; // 默认不限局数
 const nameLeft = document.getElementById('nameLeft');
 const nameRight = document.getElementById('nameRight');
 const scoreLeftDom = document.getElementById('scoreLeft');
@@ -452,10 +466,12 @@ function autoScaleLayout(){
     const baseWidth = 1200;
     const maxScale = 1.2;
     const minScale = 0.4;
-    const windowW = window.innerWidth;
+    // 使用 window.screen.width 兼容手机横竖屏
+    const windowW = Math.max(document.documentElement.clientWidth, window.innerWidth);
     let scale = windowW / baseWidth;
     scale = Math.max(minScale, Math.min(maxScale, scale));
-    scaleWrap.style.transform = `scale(${scale})`;
+    scaleWrap.style.transform = `scale(${scale}) translateZ(0)`;
+    scaleWrap.style.width = `${baseWidth}px`;
 }
 window.addEventListener('resize',autoScaleLayout);
 window.addEventListener('orientationchange',autoScaleLayout);
