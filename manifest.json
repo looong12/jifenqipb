@@ -1,21 +1,48 @@
 {
-  "id": "/",
-  "name": "记分器",
-  "min_version": "21"
+  "name": "乒乓球记分器",
   "short_name": "记分器",
-  "description": "乒乓球比赛记分工具，支持计分、切换发球方",
+  "description": "乒乓球比赛记分工具",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#111111",
+  "background_color": "#121212",
   "theme_color": "#222222",
-  "orientation": "landscape-primary",
   "icons": [
     {
-      "src": "乒乓球计分器.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "prefer_related_applications": false
+  ]
+function checkOrientation(){
+    // 判断是否竖屏
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const tipDom = document.getElementById('rotateTip');
+    if(isPortrait){
+        tipDom.style.display = 'block';
+    }else{
+        tipDom.style.display = 'none';
+    }
+}
+
+//绑定事件
+window.addEventListener('resize',()=>{
+    autoScaleLayout();
+    checkOrientation();
+});
+window.addEventListener('orientationchange',()=>{
+    setTimeout(()=>{
+        autoScaleLayout();
+        checkOrientation();
+    },100);
+});
+
+//初始化执行
+render();
+window.addEventListener('load',()=>{
+    autoScaleLayout();
+    checkOrientation();
+});
+autoScaleLayout();
+checkOrientation();
 }
