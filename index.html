@@ -1,99 +1,157 @@
 <!DOCTYPE html>
+<!-- 声明文档类型为html5 -->
 <html lang="zh-CN">
+<!-- html根标签，设置页面语言为中文 -->
 <head>
-<meta charset="UTF-8">
+<!-- 头部区域，存放元信息、样式 -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- 设置文档编码为UTF‑8，防止中文乱码 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.25, maximum-scale=5.0, viewport‑fit=cover">
-<!-- 下面这条只是提示浏览器优先横屏，不能强制横屏！ -->
+<!-- 视口配置：适配移动端，缩放范围0.25‑5倍，适配刘海屏 -->
 <meta name="screen-orientation" content="landscape">
-<link rel="manifest" href="./manifest.json">
+<!-- 建议屏幕横屏显示 -->
 <meta name="theme-color" content="#07080c">
+<!-- 设置浏览器主题栏颜色为深色 -->
 <title>乒乓球记分器</title>
+<!-- 网页标题 -->
 <style>
+/* css样式开始 */
 *{margin:0;padding:0;box-sizing:border-box;font-family:"SF Pro Display","PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-tap-highlight-color:transparent;}
+/* 全局重置：清除内外边距，盒模型border‑box，设置字体，清除移动端点击高亮 */
 body{
     background:
         radial-gradient(circle at 20% 10%, rgba(120,160,255,0.08), transparent 26%),
         radial-gradient(circle at 80% 90%, rgba(255,215,120,0.05), transparent 28%),
         linear-gradient(180deg,#07080c 0%, #0c0e14 45%, #07080c 100%);
+    /* 多层渐变背景：两个径向渐变+垂直线性深色渐变 */
     color:#e8e8e8;
+    /* 默认文字浅灰白 */
     min-height:100vh;
+    /* body最小高度占满视口 */
     display:flex;
+    /* 使用弹性布局 */
     justify-content:center;
+    /* 水平居中 */
     align-items:flex-start;
+    /* 垂直靠上对齐 */
     overflow:auto;
+    /* 内容溢出滚动 */
     padding:16px 20px;
+    /* body内边距 */
 }
 .scale-wrap {
     transform-origin: center top;
+    /* 缩放原点：顶部中心 */
     will-change: transform;
-    width: 1200px;
+    /* 提示浏览器transform会变化，做性能优化 */
+    width: 9px;
+    /* 基准宽度860px */
     max-width:100%;
+    /* 最大宽度不超过父容器 */
     overflow:visible;
+    /* 溢出内容可见 */
 }
 .wrap-rotate{
     width:100%;
-    max-width:1200px;
+    /* 宽度100%继承父级 */
+    max-width:860px;
+    /* 最大宽度860px */
     position:relative;
+    /* 相对定位，给内部弹窗做定位参照 */
 }
 .container{
     width:100%;
+    /* 容器宽度100% */
     padding:0;
+    /* 清除内边距 */
 }
 .head-line{
     display:flex;
+    /* 弹性布局 */
     gap:24px;
+    /* 子元素之间间距24px */
     justify-content:center;
+    /* 水平居中 */
     align-items:center;
+    /* 垂直居中 */
     flex-wrap:wrap;
+    /* 空间不足自动换行 */
     margin:8px 0 18px;
+    /* 上下外边距 */
 }
 #timer{
     font-size:clamp(20px,2.2vw,26px);
+    /* 响应式字号：最小20，最大26，跟随视口2.2vw */
     font-weight:500;
+    /* 字体中等粗细 */
     letter-spacing:1px;
+    /* 字间距1px */
     color:#cfd6e4;
+    /* 浅蓝灰色文字 */
 }
 #timer::before{
     content:"";
+    /* 伪元素内容为空 */
     display:inline-block;
+    /* 行内块 */
     width:10px;
     height:10px;
+    /* 宽高10px小圆点 */
     border-radius:50%;
+    /* 圆形 */
     background:#7aa2ff;
+    /* 蓝色背景 */
     vertical-align:middle;
+    /* 垂直居中对齐文字 */
     margin-right:10px;
+    /* 右侧外边距 */
     box-shadow:0 0 12px rgba(122,162,255,0.9);
+    /* 发光阴影 */
 }
 #setInfo{
     font-size:clamp(20px,2.2vw,26px);
+    /* 响应式字号 */
     font-weight:500;
     letter-spacing:1px;
     color:#cfd6e4;
 }
 .score-box{
     display:flex;
+    /* 弹性布局，左右两个选手卡片并排 */
     gap:clamp(12px,2vw,20px);
+    /* 卡片之间响应式间距 */
     width:100%;
     align-items:stretch;
+    /* 子元素高度拉伸对齐 */
 }
 @media (max-width:850px){
+    /* 媒体查询：屏幕宽度小于等于850px执行 */
     .score-box{
         flex-direction:column;
+        /* 改为垂直堆叠 */
     }
 }
 .team{
     flex:1;
+    /* 两个选手卡片均分宽度 */
     background:
         linear-gradient(180deg, #1c2030 0%, #141722 100%);
+    /* 深色垂直渐变背景 */
     border:1px solid rgba(255,255,255,0.08);
+    /* 半透明白色细边框 */
     border-radius:22px;
+    /* 大圆角 */
     display:flex;
     flex-direction:column;
+    /* 内部垂直排列 */
     align-items:center;
+    /* 水平居中 */
     padding:clamp(14px,2vw,22px) clamp(12px,1.8vw,18px);
+    /* 响应式内边距 */
     box-shadow:
         0 30px 60px rgba(0,0,0,0.45),
         inset 0 1px 0 rgba(255,255,255,0.06);
+    /* 外阴影+内顶部细微高光 */
 }
 .name-row{
     display:flex;
@@ -101,63 +159,84 @@ body{
     justify-content:center;
     width:100%;
     position:relative;
-    margin-bottom:0px; /* 加大名字区域下边距，抬高名字区域高度 */
-    padding:0px 0 16px 0;     /* 增加上下内边距，名字区域加高 */
+    /* 相对定位，发球小球绝对定位参照 */
+    margin-bottom:0px;
+    padding:0px 0 16px 0;
 }
 .name-row .ball{
     position:absolute;
+    /* 发球小球绝对定位 */
     left:0;
+    /* 默认靠左 */
 }
 .name-row.right-ball .ball{
     left:auto;
     right:0;
+    /* 右侧选手的小球靠右 */
 }
 .name-input{
     font-size:clamp(26px,3.4vw,100px);
+    /* 选手名字输入框响应式字号 */
     font-weight:600;
     text-align:center;
+    /* 文字居中 */
     background:transparent;
+    /* 输入框背景透明 */
     border:none;
+    /* 无边框 */
     outline:none;
+    /* 去掉聚焦外框 */
     color:#f5f5f7;
     padding:6px;
     width:400px;
+    /* 输入框宽度 */
 }
 .name-red{
     background:linear-gradient(180deg,#ffd1d1 0%, #ff7474 100%);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
+    /* 文字渐变红色：背景裁剪到文字，文字设透明显示背景色 */
 }
 .name-blue{
     background:linear-gradient(180deg,#d3e4ff 0%, #6aa9ff 100%);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
+    /* 文字渐变蓝色 */
 }
 .ball {
     width:clamp(26px,2.8vw,34px);
     height:clamp(26px,2.8vw,34px);
+    /* 发球标记小球尺寸响应式 */
     border-radius:50%;
     background:
         radial-gradient(circle at 30% 25%, #fff6c4, #ffd46b 45%, #d79a14 100%);
+    /* 模拟乒乓球径向渐变 */
     border:2px solid rgba(255,255,255,0.9);
     box-shadow:
         0 0 0 1px rgba(0,0,0,0.55),
         0 0 14px rgba(255,212,107,0.35);
     opacity:0;
+    /* 默认隐藏 */
     transform:scale(0.55);
+    /* 默认缩小 */
     transition:all 0.25s ease;
+    /* 所有属性0.25秒平滑过渡动画 */
     flex-shrink:0;
+    /* 禁止被压缩 */
 }
 .ball.active {
     opacity:1;
+    /* 激活显示 */
     transform:scale(1);
+    /* 恢复原始大小 */
     box-shadow:
         0 0 0 2px #000000,
         0 0 0 4px #ffd46b,
         0 0 18px rgba(255,212,107,0.95),
         0 0 34px rgba(255,170,0,0.55);
+    /* 激活时多层发光外描边 */
 }
 .game-count{
     font-size:clamp(22px,2.6vw,28px);;
@@ -165,10 +244,12 @@ body{
     letter-spacing:2px;
     color:#b8892a;
     margin-bottom:16px;
+    /* 胜局标签样式 */
 }
 .game-count span{
     color:#ffd46b;
     font-weight:700;
+    /* 胜局数字高亮金色 */
 }
 .score-wrap{
     display:flex;
@@ -176,8 +257,9 @@ body{
     justify-content:space-between;
     width:100%;
     padding:clamp(16px,2.5vh,28px) clamp(16px,2vw,26px);
-    min-height:28vh; /* 降低比分盒子最小高度，不挤压分数显示 */
+    min-height:28vh;
     max-height:52vh;
+    /* 比分区域最小最大高度 */
     background:
         linear-gradient(180deg, #242840 0%, #1a1d2c 100%);
     border:1px solid rgba(255,255,255,0.07);
@@ -185,21 +267,27 @@ body{
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.05),
         0 10px 30px rgba(0,0,0,0.35);
+    /* 比分卡片容器 */
 }
 .score-holder{
     flex:1;
     min-width:120px;
     max-width:260px;
     container-type: inline-size;
+    /* css容器查询，子元素可以使用cqi单位 */
     text-align:center;
     overflow:hidden;
+    /* 比分数字容器 */
 }
 .score{
     font-size:clamp(80px, 65cqi, 260px);
+    /* 使用容器查询单位，跟随容器宽度变化字号 */
     font-weight:800;
     line-height:1;
     letter-spacing:-4px;
+    /* 字间距收紧 */
     font-variant-numeric: tabular-nums;
+    /* 数字等宽，切换数字不会跳动 */
     display:inline-block;
 }
 .score-red{
@@ -208,6 +296,7 @@ body{
     background-clip:text;
     color:transparent;
     filter:drop-shadow(0 0 22px rgba(255,70,70,0.45));
+    /* 红色渐变比分文字+外发光 */
 }
 .score-blue{
     background:linear-gradient(180deg,#eaf2ff 0%, #8cb4ff 35%, #3f78e0 100%);
@@ -215,11 +304,13 @@ body{
     background-clip:text;
     color:transparent;
     filter:drop-shadow(0 0 22px rgba(60,120,255,0.45));
+    /* 蓝色渐变比分文字+外发光 */
 }
 .btn-group{
     display:flex;
     flex-direction:column;
     gap:clamp(12px,2vw,18px);
+    /* 加减按钮垂直排列，间距响应式 */
 }
 button{
     transition:
@@ -227,16 +318,21 @@ button{
         box-shadow 0.18s ease,
         filter 0.18s ease,
         background 0.18s ease;
+    /* 按钮多属性过渡动画 */
     will-change:transform;
     -webkit-tap-highlight-color:transparent;
+    /* 清除移动端点击高亮 */
     user-select:none;
+    /* 禁止选中按钮文字 */
 }
 button:hover{
     filter:brightness(1.08);
+    /* 鼠标悬浮亮度提高 */
 }
 button:active{
     transform:scale(0.92);
     filter:brightness(0.82) saturate(1.1);
+    /* 按下缩小，变暗，饱和度提高 */
 }
 .btn-group button{
     width:clamp(50px,7vw,72px);
@@ -253,54 +349,66 @@ button:active{
     box-shadow:
         0 10px 24px rgba(0,0,0,0.45),
         inset 0 1px 0 rgba(255,255,255,0.06);
+    /* 加减分按钮样式 */
 }
 .btn-group button:active{
     box-shadow:
         0 2px 8px rgba(0,0,0,0.55),
         inset 0 1px 2px rgba(0,0,0,0.35);
+    /* 按下时阴影变化 */
 }
-.ctrl{
-    margin-top:22px;
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:clamp(8px,1.5vw,14px);
+.ctrl {
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: clamp(8px, 1.5vw, 14px);
+    width: 100%;
+    padding:0 clamp(12px,3vw,24px);
+    box-sizing: border-box;
+    /* 底部控制按钮栏 */
 }
-.ctrl button{
-    padding:clamp(10px,1.5vh,14px) 6px;
-    font-size:clamp(13px,1.8vw,18px);
-    border:none;
-    border-radius:14px;
-    cursor:pointer;
-    font-weight:600;
-    letter-spacing:1px;
-    color:#1a1a1a;
-    background:linear-gradient(180deg,#ffe9a8 0%, #ffd24d 100%);
+.ctrl button {
+    flex: none;
+    width: auto;
+    padding: clamp(10px, 1.5vh, 14px) 22px;
+    font-size: clamp(13px, 1.8vw, 18px);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #1a1a1a;
+    background: linear-gradient(180deg, #ffe9a8 0%, #ffd24d 100%);
     box-shadow:
-        0 10px 24px rgba(255,180,0,0.25),
-        inset 0 1px 0 rgba(255,255,255,0.4);
+        0 10px 24px rgba(255, 180, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    /* 底部功能按钮黄色渐变样式 */
 }
 .ctrl button:active{
     box-shadow:
         0 2px 8px rgba(255,180,0,0.35),
         inset 0 1px 2px rgba(0,0,0,0.25);
-}
-#switchServerBtn{
-    background:linear-gradient(180deg,#c9a35a 0%, #7a5a1f 100%);
-    color:#fff;
+    /* 底部按钮按下阴影 */
 }
 .confirm-mask{
     position:absolute;
     inset:0;
+    /* 上下左右全部0，铺满父容器 */
     background:rgba(0,0,0,0.55);
     backdrop-filter:blur(6px);
     -webkit-backdrop-filter:blur(6px);
+    /* 半透明黑色遮罩，背景模糊 */
     display:none;
     align-items:center;
     justify-content:center;
     z-index:999;
+    /* 默认隐藏，层级最高弹窗 */
 }
 .confirm-mask.show{
     display:flex;
+    /* 加上show类显示弹窗 */
 }
 .confirm-box{
     width:min(480px, 90vw);
@@ -312,6 +420,7 @@ button:active{
     box-shadow:
         0 30px 60px rgba(0,0,0,0.55),
         inset 0 1px 0 rgba(255,255,255,0.06);
+    /* 弹窗内容盒子 */
 }
 .confirm-title{
     font-size:clamp(17px,2vw,20px);
@@ -319,17 +428,20 @@ button:active{
     color:#ffd46b;
     margin-bottom:12px;
     letter-spacing:2px;
+    /* 弹窗标题金色 */
 }
 .confirm-text{
     font-size:clamp(15px,1.8vw,18px);
     line-height:1.6;
     color:#e5e7ef;
     margin-bottom:22px;
+    /* 弹窗提示文本 */
 }
 .confirm-btns{
     display:flex;
     justify-content:flex-end;
     gap:12px;
+    /* 弹窗按钮靠右排列 */
 }
 .confirm-btns button{
     padding:11px 22px;
@@ -344,6 +456,7 @@ button:active{
     background:linear-gradient(180deg,#2a2f42 0%, #1a1d2c 100%);
     color:#cfd6e4;
     border:1px solid rgba(255,255,255,0.08);
+    /* 取消按钮深色 */
 }
 .confirm-ok{
     background:linear-gradient(180deg,#ffe9a8 0%, #ffd24d 100%);
@@ -351,255 +464,350 @@ button:active{
     box-shadow:
         0 10px 24px rgba(255,180,0,0.25),
         inset 0 1px 0 rgba(255,255,255,0.4);
+    /* 确定按钮黄色 */
 }
 .btn-option-group{
     display:flex;
     gap:10px;
     flex-wrap:wrap;
     margin-bottom:20px;
+    /* 赛制选择按钮组 */
 }
 .btn-option-group button{
     flex:1;
     min-width:80px;
     padding:12px 8px;
+    /* 赛制选项按钮均分宽度 */
 }
 </style>
 </head>
 <body>
-<div class="scale-wrap">
+<!-- 页面主体 -->
+<div class="scale-wrap" style="transform: scale(1.2) translateZ(0px); width: 860px;">
+<!-- 外层缩放容器，初始缩放1.2倍 -->
 <div class="wrap-rotate" id="wrapRotate">
+    <!-- 旋转包裹层，弹窗定位父级 -->
     <div class="confirm-mask" id="confirmMask">
+        <!-- 弹窗遮罩层 -->
         <div class="confirm-box">
+            <!-- 弹窗盒子 -->
             <div class="confirm-title">提示</div>
+            <!-- 弹窗标题 -->
             <div class="confirm-text" id="confirmText"></div>
-            <div class="btn-option-group" id="optionGroup" style="display:none;">
-                <!-- 局数选择选项会动态插入这里 -->
-            </div>
+            <!-- 弹窗提示文字 -->
+            <div class="btn-option-group" id="optionGroup" style="display:none;"></div>
+            <!-- 赛制选择按钮组，默认隐藏 -->
             <div class="confirm-btns" id="confirmBtnWrap">
+                <!-- 确认取消按钮容器 -->
                 <button class="confirm-cancel" id="confirmCancelBtn">取消</button>
                 <button class="confirm-ok" id="confirmOkBtn">确定</button>
             </div>
         </div>
     </div>
     <div class="container">
+        <!-- 主内容容器 -->
         <div class="head-line">
+            <!-- 头部行：计时器+赛制信息 -->
             <div id="timer">比赛时间：00:00</div>
+            <!-- 计时器显示DOM -->
             <div id="setInfo">赛制：不限局数</div>
+            <!-- 当前赛制显示DOM -->
         </div>
         <div class="score-box">
+            <!-- 两个选手整体盒子 -->
             <div class="team">
+                <!-- 左边选手卡片 -->
                 <div class="name-row">
-                    <span id="ballLeft" class="ball"></span>
-                    <input id="nameLeft" class="name-input name-red" placeholder="选手A" value="选手A">
+                    <!-- 选手名字行 -->
+                    <span id="ballLeft" class="ball active"></span>
+                    <!-- 左侧发球标记小球，初始激活 -->
+                    <input id="nameLeft" class="name-input name-red" placeholder="选手A" >
+                    <!-- 左边选手名字输入框，红色样式 -->
                 </div>
                 <span class="game-count">胜局：<span id="winLeft">0</span></span>
+                <!-- 左边选手胜局数 -->
                 <div class="score-wrap">
+                    <!-- 比分操作区域 -->
                     <div class="btn-group">
+                        <!-- 加减按钮组 -->
                         <button class="add" onclick="addLeft()">+</button>
+                        <!-- 左方加分按钮，点击调用addLeft -->
                         <button class="sub" onclick="subLeft()">−</button>
+                        <!-- 左方减分按钮，点击调用subLeft -->
                     </div>
                     <div class="score-holder">
+                        <!-- 比分数字容器 -->
                         <div class="score score-red" id="scoreLeft">0</div>
+                        <!-- 左边实时比分显示 -->
                     </div>
                     <div></div>
+                    <!-- 占位空div用来撑开弹性布局 -->
                 </div>
             </div>
             <div class="team">
+                <!-- 右边选手卡片 -->
                 <div class="name-row right-ball">
+                    <!-- 名字行，标记小球靠右 -->
                     <span id="ballRight" class="ball"></span>
-                    <input id="nameRight" class="name-input name-blue" placeholder="选手B" value="选手B">
+                    <!-- 右侧发球标记小球 -->
+                    <input id="nameRight" class="name-input name-blue" placeholder="选手B" >
+                    <!-- 右边选手名字输入框，蓝色样式 -->
                 </div>
                 <span class="game-count">胜局：<span id="winRight">0</span></span>
+                <!-- 右边选手胜局数 -->
+				
                 <div class="score-wrap">
+                    <!-- 比分操作区域 -->
                     <div></div>
+                    <!-- 占位空div -->
                     <div class="score-holder">
+                        <!-- 比分数字容器 -->
                         <div class="score score-blue" id="scoreRight">0</div>
+                        <!-- 右边实时比分显示 -->
                     </div>
                     <div class="btn-group">
+                        <!-- 加减按钮组 -->
                         <button class="add" onclick="addRight()">+</button>
+                        <!-- 右方加分按钮 -->
                         <button class="sub" onclick="subRight()">−</button>
+                        <!-- 右方减分按钮 -->
                     </div>
                 </div>
             </div>
         </div>
-        <div class="ctrl">
-            <button onclick="resetGame()">重置本局</button>
-            <button onclick="resetAll()">全部清零</button>
-            <button id="switchServerBtn" onclick="manualSwitchServer()">切换发球</button>
-            <button id="toggleTimerBtn" onclick="toggleTimer()">开始计时</button>
-            <button onclick="openSetSelect()">选择局数</button>
-        </div>
+<div class="ctrl">
+    <!-- 底部控制按钮区域 -->
+    <button id="switchServerBtn" onclick="manualSwitchServer()">切换发球</button>
+    <!-- 手动切换发球方 -->
+    <button onclick="swapPlayer()">交换位置</button>
+    <!-- 交换左右选手 -->
+    <button onclick="resetAll()">全部清零</button>
+    <!-- 全部重置 -->
+    <button id="toggleTimerBtn" onclick="toggleTimer()">开始计时</button>
+    <!-- 计时器启停按钮 -->
+    <button onclick="openSetSelect()">选择局数</button>
+    <!-- 打开赛制选择弹窗 -->
+</div>
     </div>
 </div>
 </div>
 <script>
-let leftScore = 0, rightScore = 0;
-let winLeft = 0, winRight = 0;
-let serverSide = 'left';
-let serveCount = 0;
-let timerInterval = null;
-let seconds = 0;
-let gameOver = false;
-// 赛制配置：目标胜局；null=不限局数
-let targetWin = null; // 默认不限局数
-const nameLeft = document.getElementById('nameLeft');
-const nameRight = document.getElementById('nameRight');
-const scoreLeftDom = document.getElementById('scoreLeft');
-const scoreRightDom = document.getElementById('scoreRight');
-const winLeftDom = document.getElementById('winLeft');
-const winRightDom = document.getElementById('winRight');
-const timerDom = document.getElementById('timer');
-const toggleTimerBtn = document.getElementById('toggleTimerBtn');
-const ballLeft = document.getElementById('ballLeft');
-const ballRight = document.getElementById('ballRight');
-const wrapRotate = document.getElementById('wrapRotate');
-const confirmMask = document.getElementById('confirmMask');
-const confirmText = document.getElementById('confirmText');
-const confirmOkBtn = document.getElementById('confirmOkBtn');
-const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-const optionGroup = document.getElementById('optionGroup');
-const confirmBtnWrap = document.getElementById('confirmBtnWrap');
-const setInfo = document.getElementById('setInfo');
-const scaleWrap = document.querySelector('.scale-wrap');
-let confirmCallback = null;
+// ----------------JS脚本开始----------------
+// 定义全局状态变量
+let leftScore = 0, rightScore = 0; // 左右选手当前局分数
+let winLeft = 0, winRight = 0; // 左右选手累计胜局
+let serverSide = 'left'; // 当前发球方 left / right
+let serveCount = 0; // 当前选手已经发了几个球
+let timerInterval = null; // 计时器定时器句柄
+let seconds = 0; // 已经经过的总秒数
+let gameOver = false; // 当前局是否已经结束
+let targetWin = null; // 需要赢多少局获胜，null代表不限局
+
+// 获取页面DOM元素
+const nameLeft = document.getElementById('nameLeft'); // 左边名字输入框
+const nameRight = document.getElementById('nameRight'); // 右边名字输入框
+const scoreLeftDom = document.getElementById('scoreLeft'); // 左边分数dom
+const scoreRightDom = document.getElementById('scoreRight'); // 右边分数dom
+const winLeftDom = document.getElementById('winLeft'); // 左边胜局dom
+const winRightDom = document.getElementById('winRight'); // 右边胜局dom
+const timerDom = document.getElementById('timer'); // 计时器文字dom
+const toggleTimerBtn = document.getElementById('toggleTimerBtn'); // 计时开关按钮
+const ballLeft = document.getElementById('ballLeft'); // 左侧发球标记小球
+const ballRight = document.getElementById('ballRight'); // 右侧发球标记小球
+const wrapRotate = document.getElementById('wrapRotate'); // 旋转包裹层dom
+const confirmMask = document.getElementById('confirmMask'); // 弹窗遮罩
+const confirmText = document.getElementById('confirmText'); // 弹窗提示文字
+const confirmOkBtn = document.getElementById('confirmOkBtn'); // 弹窗确定按钮
+const confirmCancelBtn = document.getElementById('confirmCancelBtn'); // 弹窗取消按钮
+const optionGroup = document.getElementById('optionGroup'); // 赛制选择按钮容器
+const confirmBtnWrap = document.getElementById('confirmBtnWrap'); // 确认取消按钮容器
+const setInfo = document.getElementById('setInfo'); // 赛制信息显示dom
+const scaleWrap = document.querySelector('.scale-wrap'); // 缩放外层容器
+let confirmCallback = null; // 弹窗点击确定后的回调函数
+
+/**
+ * 自动缩放布局函数：根据屏幕宽度自动缩放整个界面
+ */
 function autoScaleLayout(){
-    const baseWidth = 1200;
-    const maxScale = 1.2;
-    const minScale = 0.4;
-    // 使用 window.screen.width 兼容手机横竖屏
-    const windowW = Math.max(document.documentElement.clientWidth, window.innerWidth);
-    let scale = windowW / baseWidth;
-    scale = Math.max(minScale, Math.min(maxScale, scale));
-    scaleWrap.style.transform = `scale(${scale}) translateZ(0)`;
-    scaleWrap.style.width = `${baseWidth}px`;
+    const baseWidth = 860; // 设计基准宽度
+    const maxScale = 1.2; // 最大缩放倍数
+    const minScale = 0.4; // 最小缩放倍数
+    const windowW = Math.max(document.documentElement.clientWidth, window.innerWidth); // 获取窗口宽度
+    let scale = windowW / baseWidth; // 计算缩放比例
+    scale = Math.max(minScale, Math.min(maxScale, scale)); // 限制缩放区间
+    scaleWrap.style.transform = `scale(${scale}) translateZ(0)`; // 设置transform缩放，开启硬件加速
+    scaleWrap.style.width = `${baseWidth}px`; // 固定容器基准宽度
 }
-window.addEventListener('resize',autoScaleLayout);
-window.addEventListener('orientationchange',autoScaleLayout);
+window.addEventListener('resize',autoScaleLayout); // 窗口大小变化触发自动缩放
+window.addEventListener('orientationchange',autoScaleLayout); // 手机横竖屏切换触发自动缩放
+
+/**
+ * 弹出确认弹窗
+ * @param {string} text 弹窗提示文字
+ * @param {Function} onOk 点击确定执行的回调
+ */
 function showConfirm(text, onOk){
-    confirmText.innerText = text;
-    confirmCallback = onOk;
-    confirmMask.classList.add('show');
-    optionGroup.style.display = 'none';
-    confirmBtnWrap.style.display = 'flex';
+    confirmText.innerText = text; // 设置弹窗文本
+    confirmCallback = onOk; // 保存回调函数
+    confirmMask.classList.add('show'); // 显示弹窗
+    optionGroup.style.display = 'none'; // 隐藏赛制选择按钮组
+    confirmBtnWrap.style.display = 'flex'; // 显示确认、取消按钮
 }
+
+/**
+ * 关闭弹窗
+ */
 function closeConfirm(){
-    confirmMask.classList.remove('show');
-    confirmCallback = null;
+    confirmMask.classList.remove('show'); // 移除show隐藏弹窗
+    confirmCallback = null; // 清空回调
 }
+
+// 弹窗确定按钮点击事件
 confirmOkBtn.addEventListener('click',function(e){
-    e.stopPropagation();
-    const cb = confirmCallback;
-    closeConfirm();
-    if(cb) cb();
+    e.stopPropagation(); // 阻止事件冒泡，防止点击透传到遮罩
+    const cb = confirmCallback; // 取出保存的回调
+    closeConfirm(); // 关闭弹窗
+    if(cb) cb(); // 如果回调存在就执行
 });
+
+// 弹窗取消按钮点击事件
 confirmCancelBtn.addEventListener('click',function(e){
-    e.stopPropagation();
-    closeConfirm();
+    e.stopPropagation(); // 阻止冒泡
+    closeConfirm(); // 关闭弹窗
 });
+
+// 点击遮罩背景关闭弹窗
 confirmMask.addEventListener('click',function(e){
-    if(e.target === confirmMask){
+    if(e.target === confirmMask){ // 判断点击的是遮罩本身，不是弹窗内部盒子
         closeConfirm();
     }
 });
-// 计时合并按钮：切换开始/暂停
+
+/**
+ * 计时器切换：开始/暂停计时
+ */
 function toggleTimer(){
-    if(timerInterval){
-        //正在运行 → 停止
-        clearInterval(timerInterval);
+    if(timerInterval){ // 如果定时器已经存在，代表正在计时
+        clearInterval(timerInterval); // 清除定时器，暂停
         timerInterval = null;
-        toggleTimerBtn.innerText = "继续计时";
-    }else{
-        //未运行 → 启动
+        toggleTimerBtn.innerText = "继续计时"; // 修改按钮文字
+    }else{ // 没有定时器，开始计时
         timerInterval = setInterval(()=>{
-            seconds++;
-            const min = String(Math.floor(seconds/60)).padStart(2,'0');
-            const sec = String(seconds%60).padStart(2,'0');
-            timerDom.innerText=`比赛时间：${min}:${sec}`;
-        },1000);
-        toggleTimerBtn.innerText = "暂停计时";
+            seconds++; // 总秒数+1
+            const min = String(Math.floor(seconds/60)).padStart(2,'0'); // 计算分钟，补0
+            const sec = String(seconds%60).padStart(2,'0'); // 计算秒，补0
+            timerDom.innerText=`比赛时间：${min}:${sec}`; // 更新页面时间显示
+        },1000); // 每1000ms执行一次
+        toggleTimerBtn.innerText = "暂停计时"; // 修改按钮文字
     }
 }
-// 打开选择局数弹窗
+
+/**
+ * 打开赛制选择弹窗
+ */
 function openSetSelect(){
-    confirmMask.classList.add('show');
-    confirmText.innerText = "请选择比赛赛制";
-    confirmBtnWrap.style.display = 'none';
-    optionGroup.style.display = 'flex';
-    optionGroup.innerHTML = "";
+    confirmMask.classList.add('show'); // 显示弹窗
+    confirmText.innerText = "请选择比赛赛制"; // 设置弹窗文字
+    confirmBtnWrap.style.display = 'none'; // 隐藏确认取消按钮
+    optionGroup.style.display = 'flex'; // 显示赛制选项按钮组
+    optionGroup.innerHTML = ""; // 清空旧按钮
+    // 定义支持的赛制列表
     const sets = [
         {name:"3局2胜", val:2},
         {name:"5局3胜", val:3},
         {name:"7局4胜", val:4},
         {name:"不限局数", val:null}
     ];
+    // 循环生成按钮
     sets.forEach(s=>{
-        const btn = document.createElement('button');
-        btn.innerText = s.name;
-        btn.onclick = ()=>{
-            targetWin = s.val;
-            setInfo.innerText = `赛制：${s.name}`;
-            closeConfirm();
+        const btn = document.createElement('button'); // 创建按钮dom
+        btn.innerText = s.name; // 设置按钮文字
+        btn.onclick = ()=>{ // 点击按钮
+            targetWin = s.val; // 设置获胜需要的胜局数
+            setInfo.innerText = `赛制：${s.name}`; // 更新页面赛制文字
+            closeConfirm(); // 关闭弹窗
         };
-        optionGroup.appendChild(btn);
+        optionGroup.appendChild(btn); // 添加到容器
     })
 }
+
+/**
+ * 渲染页面：把内存中的分数同步到DOM界面
+ */
 function render(){
-    scoreLeftDom.innerText = leftScore;
-    scoreRightDom.innerText = rightScore;
-    winLeftDom.innerText = winLeft;
-    winRightDom.innerText = winRight;
-    checkWin();
-    updateServerTip();
+    scoreLeftDom.innerText = leftScore; // 更新左边分数
+    scoreRightDom.innerText = rightScore; // 更新右边分数
+    winLeftDom.innerText = winLeft; // 更新左边胜局
+    winRightDom.innerText = winRight; // 更新右边胜局
+    checkWin(); // 检查本局是否结束
+    updateServerTip(); // 更新发球方小球标记
 }
+
+/**
+ * 左边选手加分
+ */
 function addLeft(){
-    // targetWin不为null（有限局数）才判断整场结束锁分；不限局不锁
+    // 如果设置了赛制，并且某一方已经拿到目标胜局，禁止加分
     if(targetWin !== null && (winLeft >= targetWin || winRight >= targetWin)) return;
-    if(gameOver){
+    if(gameOver){ // 如果本局已经结束，点击加分开启新一局
         leftScore=0;
         rightScore=0;
-        swapPlayer();
+        swapPlayer(); // 交换选手位置（乒乓球换边）
         serveCount=0;
         gameOver=false;
         render();
         return;
     }
-    leftScore++;
-    handleServeAfterPoint();
-    render()
+    leftScore++; // 分数+1
+    handleServeAfterPoint(); // 处理得分后的发球轮换逻辑
+    render() // 更新界面
 }
+
+/**
+ * 左边选手减分
+ */
 function subLeft(){
-    if(leftScore>0){
-        if(gameOver){
+    if(leftScore>0){ // 分数大于0才允许减分
+        if(gameOver){ // 如果已经局结束，减分要撤销胜局
             if(leftScore > rightScore){
                 winLeft--;
             }else{
                 winRight--;
             }
-            gameOver = false;
+            gameOver = false; // 取消局结束状态
         }
-        leftScore--;
-        recalcServer();
+        leftScore--; // 分数减1
+        recalcServer(); // 重新计算发球方
     }
-    render()
+    render() // 更新界面
 }
+
+/**
+ * 右边选手加分
+ */
 function addRight(){
+    // 如果设置了赛制，并且某一方已经拿到目标胜局，禁止加分
     if(targetWin !== null && (winLeft >= targetWin || winRight >= targetWin)) return;
-    if(gameOver){
+    if(gameOver){ // 如果本局结束，开启新一局
         leftScore=0;
         rightScore=0;
-        swapPlayer();
+        swapPlayer(); // 交换选手位置
         serveCount=0;
         gameOver=false;
         render();
         return;
     }
-    rightScore++;
-    handleServeAfterPoint();
+    rightScore++; // 右边分数+1
+    handleServeAfterPoint(); // 处理发球轮换
     render()
 }
+
+/**
+ * 右边选手减分
+ */
 function subRight(){
-    if(rightScore>0){
-        if(gameOver){
+    if(rightScore>0){ // 大于0才允许减分
+        if(gameOver){ // 如果局结束，撤销胜局
             if(rightScore > leftScore){
                 winRight--;
             }else{
@@ -607,106 +815,133 @@ function subRight(){
             }
             gameOver = false;
         }
-        rightScore--;
-        recalcServer();
+        rightScore--; // 分数减1
+        recalcServer(); // 重新计算发球
     }
     render()
 }
+
+/**
+ * 每得一分后，处理发球轮换逻辑
+ */
 function handleServeAfterPoint(){
-    const total = leftScore + rightScore;
-    const deuce = (leftScore >=10 && rightScore >=10);
-    serveCount++;
+    const total = leftScore + rightScore; // 当前总分数
+    const deuce = (leftScore >=10 && rightScore >=10); // 是否进入10平之后的平分阶段
+    serveCount++; // 当前发球者发球计数+1
+    // 平分时每发1球换发球；普通情况每发2球换发球
     if( (deuce && serveCount >=1) || (!deuce && serveCount >=2) ){
-        serverSide = serverSide === 'left' ? 'right' : 'left';
-        serveCount = 0;
+        serverSide = serverSide === 'left' ? 'right' : 'left'; // 切换发球方
+        serveCount = 0; // 重置发球计数
     }
 }
+
+/**
+ * 回退分数时，根据当前总分重新计算发球方（撤销分数用）
+ */
 function recalcServer(){
-    const total = leftScore + rightScore;
-    const deuce = (leftScore >=10 && rightScore >=10);
-    const servePer = deuce ? 1 : 2;
-    const totalServes = Math.floor(total / servePer);
-    serverSide = (totalServes %2 ===0) ? 'left' : 'right';
-    serveCount = total % servePer;
+    const total = leftScore + rightScore; // 当前总分数
+    const deuce = (leftScore >=10 && rightScore >=10); // 是否平分阶段
+    const servePer = deuce ? 1 : 2; // 平分每1球换发，普通每2球换发
+    const totalServes = Math.floor(total / servePer); // 一共应该轮换多少次发球
+    serverSide = (totalServes %2 ===0) ? 'left' : 'right'; // 根据奇偶判断发球方
+    serveCount = total % servePer; // 当前发球者已经发过几个球
 }
+
+/**
+ * 更新发球标记小球显示
+ */
 function updateServerTip(){
-    ballLeft.classList.remove('active');
+    ballLeft.classList.remove('active'); // 先移除两边激活状态
     ballRight.classList.remove('active');
     if(serverSide === 'left'){
-        ballLeft.classList.add('active');
+        ballLeft.classList.add('active'); // 左边发球点亮左边小球
     }else{
-        ballRight.classList.add('active');
+        ballRight.classList.add('active'); // 右边发球点亮右边小球
     }
 }
+
+/**
+ * 手动切换发球方按钮逻辑
+ */
 function manualSwitchServer(){
-    serverSide = serverSide === 'left' ? 'right' : 'left';
-    serveCount = 0;
-    updateServerTip();
+    serverSide = serverSide === 'left' ? 'right' : 'left'; // 直接互换发球方
+    serveCount = 0; // 重置发球计数
+    updateServerTip(); // 更新小球标记
 }
+
+/**
+ * 交换左右选手：名字、分数、胜局、文字颜色全部互换
+ */
 function swapPlayer(){
-    const tempName = nameLeft.value;
-    nameLeft.value = nameRight.value;
-    nameRight.value = tempName;
-    const tempWin = winLeft;
+    const tempName = nameLeft.value; // 临时保存左边名字
+    nameLeft.value = nameRight.value; // 右边名字赋值给左边
+    nameRight.value = tempName; // 临时名字赋值给右边
+    const tempWin = winLeft; // 临时保存左边胜局
     winLeft = winRight;
     winRight = tempWin;
+    const tempScore = leftScore; // 临时保存左边分数
+    leftScore = rightScore;
+    rightScore = tempScore;
+    // 交换名字文字颜色class
     nameLeft.classList.toggle('name-red');
     nameLeft.classList.toggle('name-blue');
     nameRight.classList.toggle('name-red');
     nameRight.classList.toggle('name-blue');
+    // 交换比分文字颜色class
     scoreLeftDom.classList.toggle('score-red');
     scoreLeftDom.classList.toggle('score-blue');
     scoreRightDom.classList.toggle('score-red');
     scoreRightDom.classList.toggle('score-blue');
+    render(); // 更新界面
 }
+
+/**
+ * 检查本局是否满足获胜条件：≥11分，分差≥2分
+ */
 function checkWin(){
-    const diff = Math.abs(leftScore - rightScore);
+    const diff = Math.abs(leftScore - rightScore); // 双方分数差值绝对值
     if((leftScore >=11 || rightScore >=11) && diff >=2 && !gameOver){
+        // 满足获胜条件，并且本局还没有结束
         if(leftScore > rightScore){
-            winLeft++;
+            winLeft++; // 左边胜局+1
         }else{
-            winRight++;
+            winRight++; // 右边胜局+1
         }
-        gameOver = true;
+        gameOver = true; // 设置本局结束标记
     }
 }
-function resetGame(){
-    showConfirm("确定要重置本局当前比分吗？胜局将保留。", function(){
-        leftScore=0;
-        rightScore=0;
-        gameOver = false;
-        serveCount=0;
-        serverSide='left';
-        ballLeft.classList.remove('active');
-        ballRight.classList.remove('active');
-        render();
-    });
-}
+
+/**
+ * 全部清零：分数、胜局、计时清空，保留选手名字
+ */
 function resetAll(){
     showConfirm("确定要全部清零？比分、胜局、计时全部清空，选手名字保留。", function(){
-        leftScore=0;
+        leftScore=0; // 当前局分数清零
         rightScore=0;
-        winLeft=0;
+        winLeft=0; // 胜局清零
         winRight=0;
-        gameOver=false;
-        seconds=0;
-        serveCount=0;
-        serverSide='left';
-        stopTimerInner();
-        toggleTimerBtn.innerText = "开始计时";
-        timerDom.innerText="比赛时间：00:00";
+        gameOver=false; // 局结束标记重置
+        seconds=0; // 计时秒数清零
+        serveCount=0; // 发球计数清零
+        serverSide='left'; // 默认左边发球
+        stopTimerInner(); // 停止计时器
+        toggleTimerBtn.innerText = "开始计时"; // 修改按钮文字
+        timerDom.innerText="比赛时间：00:00"; // 重置时间显示
         ballLeft.classList.remove('active');
         ballRight.classList.remove('active');
-        render();
+        render(); // 更新界面
     });
 }
-//内部停止计时
+
+/**
+ * 内部停止计时器，不修改按钮文字，供resetAll调用
+ */
 function stopTimerInner(){
-    clearInterval(timerInterval);
+    clearInterval(timerInterval); // 清除定时器
     timerInterval=null;
 }
-render();
-autoScaleLayout();
+
+render(); // 页面初始化渲染一次界面
+autoScaleLayout(); // 页面初始化执行自动缩放
 </script>
-</body>
-</html>
+</body></html>
